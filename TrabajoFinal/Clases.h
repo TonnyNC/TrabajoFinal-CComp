@@ -6,9 +6,10 @@ private:
     int DNI;
     char* Nombre = new char[64];
 public:
-    usuario(int _DNI, char* _Nombre) {
-        DNI = _DNI;
-        Nombre = _Nombre;
+    usuario(int, char*);
+    void Imprimir() {
+        std::cout << "DNI: " << DNI<<"\n";
+        std::cout << "NOMBRE: " << Nombre<<std::endl;
     }
 };
 
@@ -39,4 +40,9 @@ private:
     char fecha_de_caducidad[10];
 public:
 };
+
+usuario::usuario(int _DNI, char* _Nombre) {
+    DNI = _DNI;
+    Nombre = _Nombre;
+}
 #pragma once
