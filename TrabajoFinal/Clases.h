@@ -1,12 +1,21 @@
 #include <iostream>
 #include <string.h>
 
+class BasedeDatos {
+private:
+    usuario* Usuarios;
+    int Num_usuarios = 100;
+public:
+    BasedeDatos();
+
+};
+
 class usuario {
 private:
     int DNI;
-    char* Nombre = new char[64];
+    std::string Nombre;
 public:
-    usuario(int, char*);
+    usuario(int, std::string);
     void Imprimir() {
         std::cout << "DNI: " << DNI<<"\n";
         std::cout << "NOMBRE: " << Nombre<<std::endl;
@@ -41,7 +50,14 @@ private:
 public:
 };
 
-usuario::usuario(int _DNI, char* _Nombre) {
+BasedeDatos::BasedeDatos() {
+    Usuarios = new usuario();
+    
+
+
+}
+
+usuario::usuario(int _DNI, std::string _Nombre) {
     DNI = _DNI;
     Nombre = _Nombre;
 }
