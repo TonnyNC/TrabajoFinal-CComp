@@ -6,8 +6,9 @@
 
 int main()
 {
-    SistemaContable *NuevoSistema = new SistemaContable();
-
+    SistemaContable *NuevoSistema = new SistemaContable(); //Va a cargar los archivos de productos
+    //crear clase menu cout << "Opciones"
+    //1.comprar 2.verificar stock 3.ver carrito
 }
 
 // Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
