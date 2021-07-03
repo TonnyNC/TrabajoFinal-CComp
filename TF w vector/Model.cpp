@@ -1,11 +1,14 @@
 #include <iostream>
+#include <stdlib.h>
 #include <windows.h>
 #include <fstream>
+#include <sstream>
 #include <vector>
 
 Sesion::Sesion()
 {
 	this->Carrito = {};
+	int posicionUs = 0;
 }
 
 void Sesion::Menu()
@@ -32,6 +35,18 @@ void Sesion::Menu()
 
 }
 
+bool Sesion::VerificarUsuario(std::string Nombre, std::string DNI)
+{
+	for (int i{ 0 }; i < this->NuevoSistema.getsizeUS(); i++) {
+		if (this->NuevoSistema.getUsuario(i).getNombre() == Nombre && this->NuevoSistema.getUsuario(i).getDNI() == DNI) 
+		{
+			this->PosicionUs ++;
+			return true;
+		}
+	}
+	return false;
+}
+
 void Sesion::IniciarSesion()
 {
 	std::string NombreTemp;
@@ -43,7 +58,7 @@ void Sesion::IniciarSesion()
 		std::cout << "Ingrese su Contraseña: " << std::endl;
 		std::getline(std::cin, DNITemp);
 
-		if (this->NuevoSistema.VerificarUsuario(NombreTemp, DNITemp)) ;
+		if (this->VerificarUsuario(NombreTemp, DNITemp)) break;
 		else
 		{
 
@@ -55,6 +70,8 @@ void Sesion::IniciarSesion()
 		}
 
 	} while (true);
+
+	this->RealizarCompra();
 }
 
 void Sesion::CrearUsuario()
@@ -69,7 +86,7 @@ void Sesion::CrearUsuario()
 		std::cout << "Ingrese su Contraseña: " << std::endl;
 		std::getline(std::cin, DNITemp);
 
-		if (this->NuevoSistema.VerificarUsuario(NombreTemp, DNITemp)) break;
+		if (this->VerificarUsuario(NombreTemp, DNITemp)) break;
 		else
 		{
 
@@ -83,17 +100,32 @@ void Sesion::CrearUsuario()
 	} while (true);
 }
 
-bool SistemaContable::VerificarUsuario(std::string Nombre, std::string DNI)
+void Sesion::RealizarCompra()
 {
-	for (int i{ 0 }; i < this->Usuarios.size(); i++) {
-		if (this->Usuarios[i].getNombre() == Nombre && this->Usuarios[i].getDNI() == DNI) return true;
+
+	char primera_respuesta;
+
+	do
+	{
+		std::cout << "Buenas, viene a comprar algo? (A.Si / B.No): ";
+		std::cin >> primera_respuesta;
+	} while ((primera_respuesta != 'A') && (primera_respuesta != 'B'));
+
+	if (primera_respuesta == 'A')
+	{
+		//productos(primera_Respuesta);
 	}
-	return false;
+
+	if (primera_respuesta == 'B')
+	{
+		std::cout << "Gracias, que tenga un buen dia. \n";
+	}
 }
+
 
 Sesion::~Sesion()
 {
-
+		
 }
 
 
@@ -110,7 +142,9 @@ float Sesion::CalcularPrecioFinal()
 
 void Sesion::CrearBoleta()
 {
-	//////////////////////////////this->Boleta.setCodigo = Por poner cuadno tenga un usuario en sesion
+
+	this->Boleta.setCodigo(this->NuevoSistema.getUsuario(this->PosicionUs).getDNI()); //Pone el DNI del cliente como codigo de boleta
+
 }
 
 SistemaContable::SistemaContable() 
@@ -122,7 +156,7 @@ SistemaContable::SistemaContable()
 	std::ifstream archivo("BaseUsuarios.csv");
 
 	if (!archivo.is_open()) std::cout << "ERROR: No se pudo abrir el archivo" << std::endl;
-
+	
 	std::string _Nombre;
 	std::string _DNI;
 
@@ -140,6 +174,38 @@ SistemaContable::SistemaContable()
 
 	archivo.close();
 
+	std::ifstream archivo("BaseProductos.csv");
+
+	if (!archivo.is_open()) std::cout << "ERROR: No se pudo abrir el archivo Productos" << std::endl;
+
+	int _codigo;
+	std::string _codigotemp;
+	std::string _Nombre_producto;
+	float _precio;
+	std::string _preciotemp;
+	int cantidad = 0;
+
+	// SSTREAM :: ISTRINGSTREAM(string) >> float/int
+
+	while (archivo.good())
+	{
+		std::getline(archivo, _codigotemp, ',');
+		std::getline(archivo, _Nombre_producto, ',');
+		std::getline(archivo, _preciotemp, '\n');
+
+		std::istringstream(_codigotemp) >> _codigo;
+		std::istringstream(_preciotemp) >> _precio;
+
+		Producto* Temp = new Producto(_codigo, _Nombre_producto, _precio);
+
+
+		this->Productos.push_back(*Temp);
+
+		delete[] Temp;
+	}
+
+	archivo.close();
+
 }
 
 void SistemaContable::AddUsuario(std::string DNI, std::string Nombre)
@@ -151,6 +217,17 @@ void SistemaContable::AddUsuario(std::string DNI, std::string Nombre)
 SistemaContable::~SistemaContable()
 {
 	
+}
+
+Usuario SistemaContable::getUsuario(int indice)
+{
+	return this->Usuarios[indice];
+}
+
+
+int SistemaContable::getsizeUS()
+{
+	return this->Usuarios.size();
 }
 
 Usuario::Usuario()
@@ -178,20 +255,17 @@ Usuario::~Usuario()
 
 }
 
-void Sesion::CrearBoleta()
-{
-
-}
-
 Producto::Producto()
 {
-	std::ifstream Productos;
-	Productos.open("BaseProductos.csv");
+	
 }
 
-Producto::Producto(int Cantidad)
+Producto::Producto(int Codigo,std::string Nombre,float Precio)
 {
-	this->Precio *= Cantidad;
+	this->Codigo = Codigo;
+	this->Nombre = Nombre;
+	this->Precio = Precio;
+	this->Cantidad = 0;
 }
 
 Producto::~Producto()
@@ -206,7 +280,7 @@ float Producto::getPrecio()
 
 Boleta::Boleta() 
 {
-	this->codigo = "00000000";
+	
 }
 
 Boleta::~Boleta()
